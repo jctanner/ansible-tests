@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+"""
+The remote_user for a connection has an order of preference based on various sources ...
+
+inventory ansible_ssh_user > task remote_user > play remote_user > playbook remote_user > cli --user
+"""
+
 import unittest
 import os 
 import sys
@@ -99,5 +105,45 @@ def test_playbook_local_task():
             remote_users.append(username)
 
     assert remote_users == ['taskuser', 'playuser']
+
+
+# TASK remote_user SHOULD OVERRIDE -u ARG
+def test_playbook_cli_userarg():
+    output = None
+    cmdargs = "ansible-playbook -c ssh -vvvv -i inventory site-no_users.yml -u cliuser"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs)
+    except:
+        pass
+
+    remote_users = []
+    lines = output.split("\n")
+    for line in lines:
+        if "ESTABLISH CONNECTION FOR USER" in line:
+            username = shlex.split(line)[-1]
+            remote_users.append(username)
+
+    assert remote_users == ['cliuser', 'taskuser', 'cliuser']
+
+
+# PLAYBOOK AND TASK remote_user SHOULD OVERRIDE -u ARG
+def test_cli_userarg_vs_playbook_user():
+    output = None
+    cmdargs = "ansible-playbook -c ssh -vvvv -i inventory site.yml -u cliuser"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs)
+    except:
+        pass
+
+    remote_users = []
+    lines = output.split("\n")
+    for line in lines:
+        if "ESTABLISH CONNECTION FOR USER" in line:
+            username = shlex.split(line)[-1]
+            remote_users.append(username)
+
+    assert remote_users == ['playuser', 'taskuser', 'playuser']
 
 
