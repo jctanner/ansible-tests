@@ -147,7 +147,7 @@ def test_cli_userarg_vs_playbook_user():
     assert remote_users == ['playuser', 'taskuser', 'playuser']
 
 
-# PLAYBOOK AND TASK remote_user SHOULD OVERRIDE -u ARG
+# ROLES CAN ONLY HAVE TASK LEVEL remote_user, WHICH SHOULD BEHAVE ACCORDINGLY
 def test_cli_userarg_vs_role_task_user():
     output = None
     cmdargs = "ansible-playbook -c ssh -vvvv -i inventory site-roles.yml -u cliuser"
