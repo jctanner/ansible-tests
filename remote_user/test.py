@@ -147,3 +147,23 @@ def test_cli_userarg_vs_playbook_user():
     assert remote_users == ['playuser', 'taskuser', 'playuser']
 
 
+# PLAYBOOK AND TASK remote_user SHOULD OVERRIDE -u ARG
+def test_cli_userarg_vs_role_task_user():
+    output = None
+    cmdargs = "ansible-playbook -c ssh -vvvv -i inventory site-roles.yml -u cliuser"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs)
+    except:
+        pass
+
+    remote_users = []
+    lines = output.split("\n")
+    for line in lines:
+        if "ESTABLISH CONNECTION FOR USER" in line:
+            username = shlex.split(line)[-1]
+            remote_users.append(username)
+
+    assert remote_users == ['roletaskuser', 'cliuser', 'cliuser', 'roletaskuser']
+
+
