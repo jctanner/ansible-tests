@@ -1,0 +1,13 @@
+# inventory > task > play > playbook
+
+- hosts: localhost
+  gather_facts: False
+  remote_user: playuser
+  tasks:
+
+    - local_action: debug
+
+    - debug: 
+      remote_user: taskuser
+
+    - debug:
