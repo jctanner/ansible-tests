@@ -1,0 +1,21 @@
+- hosts: el6.lab.net
+  gather_facts: False
+  tasks:
+    - yum: name=dos2unix state=installed
+      tags: one
+
+    - yum: name=dos2unix,strace state=installed
+      tags: two
+
+    - yum: name={{ item }}
+      with_items:
+        - dos2unix
+        - strace
+      tags: list
+
+    - yum: name={{ item }}
+      with_items:
+        - dos2unix
+        - strace
+      when: item != 'dos2unix'
+      tags: conditional_list
