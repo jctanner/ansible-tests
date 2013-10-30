@@ -5,4 +5,5 @@ for D in $(ls -l | egrep ^d | awk '{print $NF}'); do
     cd $D
     nosetests -v
     cd ..
+    echo ""
 done
