@@ -1,0 +1,13 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - alist: ['abc']
+    - blist: "{{ alist }}"
+    #- blist: ${alist} #1.2.x
+  tasks:
+    - template: src=files/alist.j2 dest=/tmp/test_list.txt
+      tags: yaml_list
+
+    - template: src=files/blist.j2 dest=/tmp/test_list.txt
+      tags: jinja_list

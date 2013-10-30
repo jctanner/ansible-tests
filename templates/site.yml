@@ -1,0 +1,10 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+    - foo: bar
+  tasks:
+    - template: src=files/foo_only.j2 dest=/tmp/foo_only.txt
+      tags: foo_only
+
+    - template: src=files/foo_plus_filter.j2 dest=/tmp/foo_plus_filter.txt
+      tags: foo_plus_filter
