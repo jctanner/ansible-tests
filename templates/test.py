@@ -70,6 +70,27 @@ def test_basic_file_template_with_filter():
     assert contents == "BAR", "%s != BAR " % (contents)
     os.remove(outpath)
 
+# MAKE A SIMPLE TEMPLATE WITH UPPER FILTER foonew == "{{ foo }}" 
+def test_basic_file_template_with_filter_var_sub():
+
+    outpath = "/tmp/foonew_plus_filter.txt"
+    if os.path.exists(outpath):
+        os.remove(outpath)
+
+    output = None
+    cmdargs = "ansible-playbook -vvv -i inventory -t foonew_plus_filter site.yml"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs)
+    except:
+        pass
+
+    assert output is not None, "Null output from ansible-playbook"
+    assert os.path.exists(outpath), "%s was not created" % outpath
+    contents = open(outpath).read().strip()
+    assert contents == "BAR", "%s != BAR " % (contents)
+    os.remove(outpath)
+
 
 #ansible-playbook -i inventory -t yaml_list lists.yml 
 #ansible-playbook -i inventory -t jinja_list lists.yml 
