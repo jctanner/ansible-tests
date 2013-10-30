@@ -1,0 +1,20 @@
+# inventory > task > play > playbook
+
+- hosts: localhost
+  gather_facts: False
+  vars:
+    homedir: "{{ lookup('env', 'HOME') }}"
+    sshpath: $homedir/.ssh/
+  tasks:
+    - debug: msg="{{ homedir }}"
+      ignore_errors: True
+
+    - debug: msg="{{ lookup('env', 'HOME') }}"
+      ignore_errors: True
+
+    - debug: msg="{{ sshpath }}"
+      ignore_errors: True
+
+    - debug: msg="{{ lookup('file', sshpath + 'known_hosts') | length  }}"
+      ignore_errors: True
+
