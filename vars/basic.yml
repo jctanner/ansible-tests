@@ -1,0 +1,22 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - a: { 'x': 42 }
+    - b: "{{ a }}"
+    - dog:
+        fido: clifford
+        rover: kujo
+    - dogs: ${dog}
+    - dogz: "{{ dog }}"
+    - dogx: dog 
+  tasks:
+    - debug: var=a
+    - debug: var=b
+    - debug: var=dog
+    - debug: var=dogs
+    - debug: var=dogz
+    - debug: var=dogx
+
+    - debug: msg="{{ a['x'] }}"
+    - debug: msg=${dog}
