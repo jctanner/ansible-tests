@@ -11,6 +11,7 @@ import os
 import sys
 import subprocess 
 import shlex
+import tempfile
 
 
 # MAKE SURE hacking/env-setup IS SOURCED BEFORE RUNNING TESTS
@@ -28,12 +29,14 @@ def test_inventory_ssh_user():
     output = None
     cmdargs = "ansible-playbook -c ssh -vvvv -i inventory_with_ssh_user site.yml"
     cmdargs = shlex.split(cmdargs)
+    fh, fpath = tempfile.mkstemp()
     try:
-        output = subprocess.check_output(cmdargs)
+        output = subprocess.check_output(cmdargs, stderr=fh)
     except:
         pass
 
     remote_users = []
+    assert output is not None, "%s" % open(fpath).read()
     lines = output.split("\n")
     for line in lines:
         if "ESTABLISH CONNECTION FOR USER" in line:

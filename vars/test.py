@@ -25,6 +25,7 @@ def test_ansible_playbook_in_path():
     assert path is not None
 
 # MAKE SURE ANSIBLE_SSH_USER OVERRIDES ALL OTHER remote_user DEFS
+"""
 def test_inventory_ssh_user():
 
     #"msg": "/home/jtanner"
@@ -52,4 +53,4 @@ def test_inventory_ssh_user():
     assert messages[0] == '"/home/jtanner"', "%s" % messages
     assert messages[1] == '"/home/jtanner"', "%s" % messages
     os.remove(fpath)
-
+"""
