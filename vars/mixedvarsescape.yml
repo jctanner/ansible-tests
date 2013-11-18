@@ -1,0 +1,34 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - foo: "bar"
+    - shellvar: "stringdata"
+  tasks:
+    - shell: echo "1 2" ${foo} 
+      register: legacy 
+      failed_when: legacy.stdout != "1 2 bar"
+
+    - shell: echo "1 2" "{{ foo }}"
+      register: newstyle 
+      failed_when: newstyle.stdout != "1 2 bar"
+
+    - shell: echo "1 2" | awk '{print \$2}'
+      register: escaped
+      failed_when: escaped.stdout != '2'
+
+    - shell: echo "1 2" ${foo} | awk '{print \$3}'
+      register: mixed
+      failed_when: mixed.stdout != "bar"
+
+    - shell: echo "1 2" ${foo} "{{ foo + 'new' }}" 
+      register: mixed
+      failed_when: mixed.stdout != "1 2 bar barnew"
+
+    - shell: echo "1 2" ${foo} "{{ foo + 'new' }}" | awk '{print \$4}'
+      register: mixed
+      failed_when: mixed.stdout != "barnew"
+
+    - shell: export shellvar="{{ shellvar + 'extra' }}" ; echo \$shellvar
+      register: skipvar
+      failed_when: skipvar.stdout != "stringdataextra"
