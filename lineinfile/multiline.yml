@@ -1,0 +1,21 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    lines:
+        - a
+        - a
+        - a
+        - a
+  tasks:
+    #- shell: rm {{ tempfile }}
+    #  ignore_errors: True
+    - shell: echo {{ item }} >> {{ tempfile }}
+      with_items: lines
+
+    - lineinfile: dest={{ tempfile }} line="b" regexp='^a' 
+      register: result
+      until: result.msg != "line replaced"
+      retries: 100
+      delay: 0
+
