@@ -24,33 +24,33 @@ def test_ansible_playbook_in_path():
 
     assert path is not None
 
-# MAKE SURE ANSIBLE_SSH_USER OVERRIDES ALL OTHER remote_user DEFS
-"""
-def test_inventory_ssh_user():
 
-    #"msg": "/home/jtanner"
-    #"msg": "/home/jtanner"
-    #"msg": "/home/jtanner/.ssh/"
-    #"msg": "19000"
+# basic.yml  mixedvarsescape.yml
 
-    fh, fpath = tempfile.mkstemp()
+# TEST BASIC VARIABLE CREATION
+def test_vars_basic():
+
+    #fh, fpath = tempfile.mkstemp()
     output = None
-    cmdargs = "ansible-playbook -c ssh -vvvv -i inventory site.yml"
+    cmdargs = "ansible-playbook -vvvv -i inventory -t basic vartest.yml"
     cmdargs = shlex.split(cmdargs)
     try:
         output = subprocess.check_output(cmdargs, stderr=fh)
     except:
         pass
 
-    messages = []
+    # localhost : ok=3    changed=3    unreachable=0    failed=0
+    results = {}
     lines = output.split("\n")
     for line in lines:
-        if line.strip().startswith('"msg"'):
-            data = line.split(':', 1)[1].strip()
-            messages.append(data)
+        if line.strip().startswith('localhost'):
+            parts = shlex.split(line)
+            for word in parts:
+                if '=' in word:
+                    k,v = word.split('=')
+                    open("/tmp/awx.log", "a").write("%s\n" % word)
+                    results[k] = int(v)
 
-    assert len(messages) == 4, "%s" % messages
-    assert messages[0] == '"/home/jtanner"', "%s" % messages
-    assert messages[1] == '"/home/jtanner"', "%s" % messages
-    os.remove(fpath)
-"""
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    #os.remove(fpath)

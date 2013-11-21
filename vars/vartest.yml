@@ -1,0 +1,19 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - a: { 'x': 42 }
+    - b: "{{ a }}"
+    - dog:
+        fido: clifford
+        rover: kujo
+    - dogs: ${dog}
+    - dogz: "{{ dog }}"
+    - dogx: dog 
+  tasks:
+    - shell: test "{{ a }}" = "{{ b }}"
+      tags: basic
+    - shell: test "{{ dogs }}" = "{{ dogz }}"
+      tags: basic
+    - shell: test "{{ dogx }}" = "dog"
+      tags: basic
