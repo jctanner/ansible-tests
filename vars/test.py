@@ -30,17 +30,18 @@ def test_ansible_playbook_in_path():
 # TEST BASIC VARIABLE CREATION
 def test_vars_basic():
 
-    #fh, fpath = tempfile.mkstemp()
+    fh, fpath = tempfile.mkstemp()
     output = None
     cmdargs = "ansible-playbook -vvvv -i inventory -t basic vartest.yml"
     cmdargs = shlex.split(cmdargs)
     try:
         output = subprocess.check_output(cmdargs, stderr=fh)
     except:
-        pass
+        import epdb; epdb.serve()
 
     # localhost : ok=3    changed=3    unreachable=0    failed=0
     results = {}
+    assert output is not None, "No output from ansible-playbook"
     lines = output.split("\n")
     for line in lines:
         if line.strip().startswith('localhost'):
@@ -53,4 +54,4 @@ def test_vars_basic():
 
     assert results != {}, "parsing results failed" 
     assert results['failed'] == 0, "results: %s" % results
-    #os.remove(fpath)
+    os.remove(fpath)
