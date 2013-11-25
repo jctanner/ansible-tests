@@ -1,0 +1,50 @@
+- hosts: localhost
+  user: root
+  gather_facts: False
+  tasks:
+
+    - shell: userdel fred; groupdel fred ; fgroupone fgroupone; groupdel fgrouptwo
+      ignore_errors: True
+      failed_when: False
+    - shell: rm -rf /home/fred ; rm -rf /var/spool/mail/fred
+      ignore_errors: True
+      failed_when: False
+
+    - action: group name=fred state=present
+    - action: group name=fgroupone state=present
+    - action: group name=fgrouptwo state=present
+
+    - debug: msg="#########CREATE FRED############" 
+    - action: user name=fred group=fgroupone state=present
+    - command: id fred
+      register: return
+    - shell: DATA=\$(echo "{{ return.stdout }}" | sed 's/[0-9]//g'); test "$DATA" = 'uid=(fred) gid=(fgroupone) groups=(fgroupone)'
+
+    - debug: msg="#########SWITCH PRIMARY GROUP############" 
+    # make sure fred's primary is fred, and secondary = fred+fgroupone
+    - action: user name=fred group=fred groups=fgroupone state=present
+    - shell: id fred
+      register: return
+    - shell: DATA=\$(echo "{{ return.stdout }}" | sed 's/[0-9]//g'); test "$DATA" = 'uid=(fred) gid=(fred) groups=(fred),(fgroupone)'
+      ignore_errors: True
+
+    - name: verify idempotency 1
+      user: name=fred group=fred groups=fgroupone state=present
+      register: result
+      failed_when: result.changed == True
+      ignore_errors: True
+
+    - debug: msg="#########TWO GROUPS############" 
+
+    # make sure fred's primary is fred, and secondary = fred+fgroupone+fgrouptwo
+    - action: user name=fred group=fred groups=fgroupone,fgrouptwo state=present
+    - shell: id fred
+      register: return
+    - shell: DATA=\$(echo "{{ return.stdout }}" | sed 's/[0-9]//g'); test "$DATA" = 'uid=(fred) gid=(fred) groups=(fred),(fgroupone),(fgrouptwo)'
+      ignore_errors: True
+
+    - name: verify idempotency 2
+      user: name=fred group=fred groups=fgroupone,fgrouptwo state=present
+      register: result
+      failed_when: result.changed == True
+      ignore_errors: True
