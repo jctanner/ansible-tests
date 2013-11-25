@@ -1,3 +1,6 @@
+# https://github.com/ansible/ansible/issues/3062
+# https://github.com/ansible/ansible/issues/5010
+
 - hosts: localhost
   user: root
   gather_facts: False
