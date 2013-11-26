@@ -1,0 +1,22 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - hostnames:
+        - ha
+        - hb
+        - hc
+    - groupnames:
+        - gx
+        - gy
+        - gz
+  tasks:
+    - name: add some hosts and groups
+      local_action: add_host hostname={{ item.0 }} groupname={{ item.1 }}
+      with_together:
+        - hostnames
+        - groupnames
+
+    - name: add a host to all groups
+      local_action: add_host hostname="ahost" groupname={{ item }}
+      with_items: groupnames

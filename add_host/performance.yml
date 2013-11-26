@@ -1,0 +1,20 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - names.hosts.yml
+    - names.groups.yml
+  tasks:
+
+    - debug: var=hostnames
+    - debug: var=groupnames
+
+    - name: add some hosts and groups
+      local_action: add_host hostname={{ item.0 }} groupname={{ item.1 }}
+      with_together:
+        - hostnames
+        - groupnames
+
+    - name: add a host to all groups
+      local_action: add_host hostname="superman" groupname={{ item }}
+      with_items: groupnames
