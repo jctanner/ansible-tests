@@ -39,9 +39,13 @@ def test_ansible_playbook_in_path():
 
     assert path is not None
 
+#comments.yml
+#escaping.yml
+#misc-types.yml
+#simple.yml
 
-# TEST BASIC VARIABLE CREATION
-def test_simple_authorized_keys():
+# TEST AUTHORIZED_KEY DOC EXAMPLES
+def test_authorized_keys_examples():
 
     fh, fpath = tempfile.mkstemp()
     output = None
@@ -59,3 +63,64 @@ def test_simple_authorized_keys():
     assert results != {}, "parsing results failed" 
     assert results['failed'] == 0, "results: %s" % results
     os.remove(fpath)
+
+# TEST AUTHORIZED_KEY ESCAPING
+def test_authorized_keys_escapes():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory escaping.yml"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs, stderr=fh)
+    except:
+        #import epdb; epdb.serve()
+        pass
+
+    assert output is not None, "no output from ansible-playbook: %s" % fh.read()
+    results = parse_playbook_output(output)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+
+# TEST AUTHORIZED_KEY COMMENTS
+def test_authorized_keys_comments():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory comments.yml"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs, stderr=fh)
+    except:
+        #import epdb; epdb.serve()
+        pass
+
+    assert output is not None, "no output from ansible-playbook: %s" % fh.read()
+    results = parse_playbook_output(output)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+
+# TEST AUTHORIZED_KEY MISC KEYS
+def test_authorized_keys_misc():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory misc-types.yml"
+    cmdargs = shlex.split(cmdargs)
+    try:
+        output = subprocess.check_output(cmdargs, stderr=fh)
+    except:
+        #import epdb; epdb.serve()
+        pass
+
+    assert output is not None, "no output from ansible-playbook: %s" % fh.read()
+    results = parse_playbook_output(output)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+

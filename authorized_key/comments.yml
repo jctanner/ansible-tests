@@ -15,27 +15,27 @@
     - authorized_key:
         user={{ ansible_ssh_user }}
         path={{ keyfile }}
-        key='from="x.lab.net",no-pty ssh-rsa A some,stuff and \#more stuff'
-    - shell: egrep ^'from="x.lab.net",no-pty ssh-rsa A some,stuff and \#more stuff'\$ {{ keyfile }}
+        key="ssh-rsa A some,stuff and \#more stuff"
+    - shell: egrep ^'ssh-rsa A some,stuff and \#more stuff'\$ {{ keyfile }}
       register: result
       failed_when: result.rc != 0
       ignore_errors: true
 
-    - authorized_key:
-        user={{ ansible_ssh_user }}
-        path={{ keyfile }}
-        key='from="x.lab.net",no-pty ssh-rsa B some, stuff and \#more stuff'
-    - shell: egrep ^'from="x.lab.net",no-pty ssh-rsa A some,stuff and \#more stuff'\$ {{ keyfile }}
-      register: result
-      failed_when: result.rc != 0
-      ignore_errors: true
+    #- authorized_key:
+    #    user={{ ansible_ssh_user }}
+    #    path={{ keyfile }}
+    #    key='from="x.lab.net",no-pty ssh-rsa B some, stuff and \#more stuff'
+    #- shell: egrep ^'from="x.lab.net",no-pty ssh-rsa A some,stuff and \#more stuff'\$ {{ keyfile }}
+    #  register: result
+    #  failed_when: result.rc != 0
+    #  ignore_errors: true
 
-    - authorized_key:
-        user={{ ansible_ssh_user }}
-        path={{ keyfile }}
-        key='from="x.lab.net",no-pty ssh-rsa C \#comment'
-    - shell: egrep ^'from="x.lab.net",no-pty ssh-rsa A \#comment'\$ {{ keyfile }}
-      register: result
-      failed_when: result.rc != 0
-      ignore_errors: True
+    #- authorized_key:
+    #    user={{ ansible_ssh_user }}
+    #    path={{ keyfile }}
+    #    key='from="x.lab.net",no-pty ssh-rsa C \#comment'
+    #- shell: egrep ^'from="x.lab.net",no-pty ssh-rsa A \#comment'\$ {{ keyfile }}
+    #  register: result
+    #  failed_when: result.rc != 0
+    #  ignore_errors: True
 
