@@ -1,0 +1,31 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    keyfile: /tmp/nobody/.ssh/akeyfile.txt
+  tasks:
+ 
+    - shell: rm -rf /tmp/nobody/.ssh ; mkdir -p /tmp/nobody/.ssh
+      ignore_errors: True
+
+    # https://github.com/ansible/ansible/issues/5032
+    - authorized_key:
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key='from="1.*,2.*" ssh-rsa aaa user@host'
+    - shell: egrep ^'from="1.*,2.*" ssh-rsa aaa user@host'\$ {{ keyfile }}
+      register: result
+      failed_when: result.rc != 0
+
+    - shell: rm -rf /tmp/nobody/.ssh ; mkdir -p /tmp/nobody/.ssh
+      ignore_errors: True
+
+    # https://github.com/ansible/ansible/issues/5021
+    - authorized_key:
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key="ssh-rsa bbbb== somebody's key"
+    - shell: egrep ^"ssh-rsa bbbb== somebody's key"\$ {{ keyfile }}
+      register: result
+      failed_when: result.rc != 0
+

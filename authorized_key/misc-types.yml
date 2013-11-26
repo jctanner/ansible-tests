@@ -1,0 +1,26 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    keyfile: /tmp/nobody/.ssh/akeyfile.txt
+    keytypes:
+        - dsa
+        - ecdsa
+        - rsa
+        #- rsa1 #rsa1 keys can not be parsed
+  tasks:
+    - shell: rm -rf /tmp/nobody/.ssh ; mkdir -p /tmp/nobody/.ssh
+      ignore_errors: True
+
+    # make some keys
+    - shell: rm -rf /tmp/genkeys ; mkdir /tmp/genkeys
+      ignore_errors: True
+    - shell: ssh-keygen -t {{ item }} -f /tmp/genkeys/{{ item }} -N ''    
+      with_items: keytypes
+
+    # add the keys one by one
+    - authorized_key:
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key="{{ lookup('file', '/tmp/genkeys/' + item + '.pub') }}"
+      with_items: keytypes

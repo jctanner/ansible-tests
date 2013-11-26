@@ -1,0 +1,19 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    keyfile: /tmp/nobody/.ssh/akeyfile.txt
+  tasks:
+    - shell: rm -rf /tmp/nobody/.ssh ; mkdir -p /tmp/nobody/.ssh
+      ignore_errors: True
+
+    - authorized_key: 
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key="ssh-rsa a"
+
+    - authorized_key: 
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key="ssh-rsa b"
+        key_options='no-port-forwarding,host="0.0.0.0"'
