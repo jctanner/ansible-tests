@@ -15,6 +15,7 @@ import tempfile
 
 import string
 import random
+import time
 
 
 def parse_playbook_output(rawdata):
@@ -48,11 +49,15 @@ def test_add_host_performance():
     output = None
     cmdargs = "ansible-playbook -vvvv -i inventory performance.yml"
     cmdargs = shlex.split(cmdargs)
+
+    start_time = time.time()
     try:
         output = subprocess.check_output(cmdargs, stderr=fh)
     except:
         #import epdb; epdb.serve()
         pass
+    elapsed_time = time.time() - start_time
+    open("/tmp/awx.log", "a").write("%s\n" % elapsed_time)
 
     assert output is not None, "no output from ansible-playbook: %s" % fh.read()
     results = parse_playbook_output(output)
@@ -61,3 +66,4 @@ def test_add_host_performance():
     assert results['failed'] == 0, "results: %s" % results
     os.remove(fpath)
 
+    assert elapsed_time < 5, "performance regression: %s > 5" % elapsed_time
