@@ -2,8 +2,8 @@
   connection: local
   gather_facts: False
   vars_files:
-    - names.hosts.yml
-    - names.groups.yml
+    - vars/names.hosts.yml
+    - vars/names.groups.yml
   tasks:
 
     - debug: var=hostnames

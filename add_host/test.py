@@ -43,6 +43,46 @@ def test_ansible_playbook_in_path():
 
     assert path is not None
 
+
+def test_add_host_to_existing_group():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory existing.yml"
+    cmdargs = shlex.split(cmdargs)
+
+    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+
+    assert stdout is not None, \
+        "no output from ansible-playbook: %s" % stdout + stderr
+    results = parse_playbook_output(stdout)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+
+def test_add_hosts_and_groups():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory multiadd.yml"
+    cmdargs = shlex.split(cmdargs)
+
+    try:
+        output = subprocess.check_output(cmdargs, stderr=fh)
+    except:
+        #import epdb; epdb.serve()
+        pass
+
+    assert output is not None, "no output from ansible-playbook: %s" % fh.read()
+    #assert output is not None, "no output from ansible-playbook: %s" % fpath.read()
+    results = parse_playbook_output(output)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+
 def test_add_host_performance():
 
     fh, fpath = tempfile.mkstemp()
@@ -57,7 +97,6 @@ def test_add_host_performance():
         #import epdb; epdb.serve()
         pass
     elapsed_time = time.time() - start_time
-    open("/tmp/awx.log", "a").write("%s\n" % elapsed_time)
 
     assert output is not None, "no output from ansible-playbook: %s" % fh.read()
     results = parse_playbook_output(output)
@@ -66,4 +105,4 @@ def test_add_host_performance():
     assert results['failed'] == 0, "results: %s" % results
     os.remove(fpath)
 
-    assert elapsed_time < 5, "performance regression: %s > 5" % elapsed_time
+    assert elapsed_time < 5, "performance regression: %s > 5.5" % elapsed_time
