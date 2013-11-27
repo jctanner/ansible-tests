@@ -1,0 +1,35 @@
+# https://github.com/ansible/ansible/issues/5030
+
+# PREP
+- hosts: localhost
+  gather_facts: False
+  user: root
+  tasks:
+    - user: name=bob createhome=yes generate_ssh_key=yes
+    - authorized_key: key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}" user=bob
+    - lineinfile: "line='bob ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=present"
+
+# TEST
+- hosts: xhost
+  gather_facts: false
+  sudo: True
+  sudo_user: bob
+  user: bob
+  tasks:
+    - shell: whoami
+      register: result
+      failed_when: result.stdout != 'bob'
+      ignore_errors: True
+    - debug: var=result
+      failed_when: 
+
+# CLEANUP
+- hosts: localhost
+  gather_facts: False
+  user: root
+  tasks:
+    - lineinfile: "line='bob ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=absent"
+    - user: name=bob state=absent
+    - file: path=/home/bob state=absent
+
+

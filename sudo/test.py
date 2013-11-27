@@ -95,3 +95,20 @@ def test_sudo_as_jane():
     assert results['sudocalls'] == 1, "results: %s" % results
 
 
+# TEST SKIPPING SUDO INVOCATION
+def test_sudo_as_bob():
+
+    cmdargs = "ansible-playbook -vvvv -i inventory bob.yml"
+    cmdargs = shlex.split(cmdargs)
+
+    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+
+    assert stdout is not None, "no output from ansible-playbook: %s" % stderr
+    results = parse_playbook_output(stdout)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    assert results['sudocalls'] == 0, "results: %s" % results
+
+
