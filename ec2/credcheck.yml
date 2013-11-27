@@ -1,0 +1,141 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+    - aws_secret_key: "akeyxxxxxxx"
+    - aws_access_key: "skeyxxxxxxx"
+    - instance_type: "t1.micro"
+    - region: "eu-west-1"
+    - image: "ami-d03ea1e0"
+    - instance_id: "xxxxxxx"
+    - group: "quick-start-1"
+    - keypair: "xxxxxxx"
+    - autherror: "AuthFailure: AWS was not able to validate the provided access credentials"
+    - autherror2: "No handler was ready to authenticate. 1 handlers were checked. ['QuerySignatureV2AuthHandler'] Check your credentials"
+    - paramerrors:
+        - "No handler was ready to authenticate."
+
+
+  tasks:
+
+    #############
+    # EC2
+    #############
+
+    # check if aws_ works as a parameter
+    - name: make one instance
+      ec2: image={{ image }}
+           instance_type={{ instance_type }}
+           aws_access_key={{ aws_access_key }}
+           aws_secret_key={{ aws_secret_key }}
+           keypair={{ keypair }}
+           instance_tags='{"foo":"bar"}'
+           region={{ region }}
+           wait=true
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+
+    # check if ec2_ works as a parameter
+    - name: make one instance
+      ec2: image={{ image }}
+           instance_type={{ instance_type }}
+           ec2_access_key={{ aws_access_key }}
+           ec2_secret_key={{ aws_secret_key }}
+           keypair={{ keypair }}
+           instance_tags='{"foo":"bar"}'
+           region={{ region }}
+           wait=true
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+
+    #############
+    # EC2_AMI
+    #############
+
+    # check if aws_ works as a parameter
+    - name: check if ec2_ami accepts aws_*
+      ec2_ami: image_id={{ image }}
+           instance_id={{ instance_id }}
+           name={{ image }}
+           aws_access_key={{ aws_access_key }}
+           aws_secret_key={{ aws_secret_key }}
+           region={{ region }}
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+
+    - debug: var=result
+
+    # check if aws_ works as a parameter
+    - name: check if ec2_ami accepts ec2_*
+      ec2_ami: image_id={{ image }}
+           instance_id={{ instance_id }}
+           name={{ image }}
+           ec2_access_key={{ aws_access_key }}
+           ec2_secret_key={{ aws_secret_key }}
+           region={{ region }}
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+
+    - debug: var=result
+
+    #############
+    # EC2_ELB
+    #############
+
+    - name: check if ec2_elb accepts aws_*
+      ec2_elb: 
+           instance_id={{ instance_id }}
+           aws_access_key={{ aws_access_key }}
+           aws_secret_key={{ aws_secret_key }}
+           state=present
+           region={{ region }}
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror2
+      tags: ec2_elb
+
+    - name: check if ec2_elb accepts ec2_*
+      ec2_elb: 
+           instance_id={{ instance_id }}
+           ec2_access_key={{ aws_access_key }}
+           ec2_secret_key={{ aws_secret_key }}
+           state=present
+           region={{ region }}
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != "failed to get load balancers"
+      tags: ec2_elb
+
+    #############
+    # EC2_TAG
+    #############
+
+    - name: check if ec2_tag accepts aws_*
+      ec2_tag: 
+           resource={{ instance_id }}
+           aws_access_key={{ aws_access_key }}
+           aws_secret_key={{ aws_secret_key }}
+           state=present
+           region={{ region }}
+           tags="name=foo"
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+      tags: ec2_tag
+
+    - name: check if ec2_tag accepts ec2_*
+      ec2_tag: 
+           resource={{ instance_id }}
+           ec2_access_key={{ aws_access_key }}
+           ec2_secret_key={{ aws_secret_key }}
+           state=present
+           region={{ region }}
+           tags="name=foo"
+      register: result
+      ignore_errors: True
+      failed_when: result.msg != autherror
+      tags: ec2_tag
+
