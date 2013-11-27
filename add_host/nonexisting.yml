@@ -1,0 +1,17 @@
+# https://github.com/ansible/ansible/issues/5056
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Add a new host to a new group 'whynot'
+      local_action: add_host hostname=qux groupname=whynot
+
+    - name: Print groups - All groups except 'whynot' are removed
+      debug: msg="{{ groups|join(', ') }}"
+
+    - name: make sure test group still exist
+      debug: msg="{{ groups.test|sort|join(', ') }}"
+      register: result
+      failed_when: result.msg != "bar, foo"
+      ignore_errors: True
+

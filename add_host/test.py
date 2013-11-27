@@ -62,6 +62,24 @@ def test_add_host_to_existing_group():
     assert results['failed'] == 0, "results: %s" % results
     os.remove(fpath)
 
+def test_add_host_to_nonexisting_group():
+
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory nonexisting.yml"
+    cmdargs = shlex.split(cmdargs)
+
+    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+
+    assert stdout is not None, \
+        "no output from ansible-playbook: %s" % stdout + stderr
+    results = parse_playbook_output(stdout)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+
 def test_add_hosts_and_groups():
 
     fh, fpath = tempfile.mkstemp()
@@ -81,6 +99,7 @@ def test_add_hosts_and_groups():
 
     assert results != {}, "parsing results failed" 
     assert results['failed'] == 0, "results: %s" % results
+    assert results['unreachable'] == 0, "results: %s" % results
     os.remove(fpath)
 
 def test_add_host_performance():
