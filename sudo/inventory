@@ -1,0 +1,3 @@
+localhost
+thishost ansible_ssh_host=127.0.0.1 ansible_ssh_user=fred
+xhost ansible_ssh_host=127.0.0.1 

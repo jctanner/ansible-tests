@@ -1,0 +1,9 @@
+- hosts: localhost
+  gather_facts: False
+  user: root
+  sudo: True
+  sudo_user: daemon
+  tasks:
+    - shell: whoami
+      register: result
+      failed_when: result.stdout != "daemon"
