@@ -45,7 +45,7 @@ def test_ansible_playbook_in_path():
     assert path is not None
 
 # TEST SUDO
-def test_async_ten_seconds():
+def test_async_five_seconds():
 
     cmdargs = "ansible-playbook -vvvv -i inventory basic.yml"
     cmdargs = shlex.split(cmdargs)

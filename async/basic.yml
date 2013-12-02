@@ -1,6 +1,6 @@
 - hosts: localhost
   gather_facts: False
   tasks:
-    - shell: for i in $(seq 1 10); do echo $i ; sleep 1; done;
-      async: 11
+    - shell: for i in $(seq 1 5); do echo $i ; sleep 1; done;
+      async: 10
       poll: 1
