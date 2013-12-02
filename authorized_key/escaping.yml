@@ -29,3 +29,13 @@
       register: result
       failed_when: result.rc != 0
 
+    # https://github.com/ansible/ansible/pull/5107
+    - authorized_key:
+        user={{ ansible_ssh_user }}
+        path={{ keyfile }}
+        key_options='from="1.*,2.*",no-X11-forwarding,no-agent-forwarding'
+        key="ssh-rsa WHATEVER2 user@host"
+        state=present
+    - shell: egrep ^'from="1.*,2.*",no-X11-forwarding,no-agent-forwarding ssh-rsa WHATEVER2 user@host'\$ {{ keyfile }}
+      register: result
+      failed_when: result.rc != 0
