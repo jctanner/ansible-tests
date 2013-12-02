@@ -34,16 +34,15 @@ def test_basic_package_install():
     output = None
     cmdargs = "ansible-playbook -c ssh -vvvv -i inventory -t one yum.yml"
     cmdargs = shlex.split(cmdargs)
-    try:
-        #output = subprocess.check_output(cmdargs, stderr=fh, stdout=fh2)
-        output = subprocess.check_output(cmdargs)
-    except:
-        pass
 
-    assert output is not None
+    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+
+    output = stdout
+    assert output is not None, "failed: %s" % stderr
+
     #output = output.strip()
     lines = output.split("\n")
-
 
     installed = []
 
