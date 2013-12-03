@@ -39,9 +39,9 @@ def parse_ansible_output(rawdata):
     for line in lines:
         parts = shlex.split(line)
         if len(parts) > 0:
-            print parts
+            #print parts
             if parts[0] == 'msg:':
-                results['msg'] = line.split(':', 1)[1].strip()
+                results['msg'] = line.split(':', 1)[1].strip().replace('"', '').replace(',', '')
     return results    
 
 
@@ -75,9 +75,10 @@ def test_checkmode_setup():
     assert stdout is not None, "no output from ansible: %s" % stderr
     results = parse_ansible_output(stdout)
 
-    assert 'msg' in results, "%s" % results
-    assert results['msg'] != "cannot yet run check mode against old-style modules", \
-                            "%s" % results['msg']
+    #assert False, "%s" % results
+    assert 'msg' in results, "no message%s" % results
+    assert results['msg'] != 'cannot yet run check mode against old-style modules' \
+                            "wrong error: %s" % results['msg']
 
 
 
