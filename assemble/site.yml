@@ -1,0 +1,17 @@
+# https://github.com/ansible/ansible/pull/5091
+- hosts: localhost
+  gather_facts: False
+  vars:
+    outfile: "/tmp/combined_file"
+  tasks:
+    - shell: if [ -f "{{ outfile }}" ] ; then rm -f "{{ outfile }}"; fi
+      #ignore_errors: True
+
+    - name: Assemble files
+      assemble:
+        remote_src: False
+        src: files
+        dest: "{{ outfile }}"
+
+    - file: path="{{ outfile }}" state=file
+    - shell: test $(cat "{{ outfile }}" | tr '\n' '_') = "a_b_c_"

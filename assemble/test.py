@@ -42,6 +42,7 @@ def test_ansible_playbook_in_path():
 # TEST LOCAL ASSEMBLE
 def test_assemble_local():
 
+    # https://github.com/ansible/ansible/pull/5091
     fh, fpath = tempfile.mkstemp()
     output = None
     cmdargs = "ansible-playbook -i inventory site.yml"
