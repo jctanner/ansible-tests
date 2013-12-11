@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
 """
-The remote_user for a connection has an order of preference based on various sources ...
-
-inventory ansible_ssh_user > task remote_user > play remote_user > playbook remote_user > cli --user
+import unittest
+calhost | success >> {
+    "ansible_facts": {
+        "ansible_kernel": "3.2.0-29-generic"
+    },
+    "changed": false
+}
 """
 
-import unittest
 import os 
 import sys
 import subprocess 
@@ -18,6 +21,7 @@ def parse_playbook_output(rawdata):
     # localhost : ok=3    changed=3    unreachable=0    failed=0
     results = {}
     results['sudocalls'] = 0
+    results['msg'] = None
 
     lines = rawdata.split("\n")
     for line in lines:
@@ -35,6 +39,7 @@ def parse_playbook_output(rawdata):
 
 def parse_ansible_output(rawdata):
     results = {}
+    results['msg'] = None
     lines = rawdata.split("\n")
     for line in lines:
         parts = shlex.split(line)
@@ -76,9 +81,9 @@ def test_checkmode_setup():
     results = parse_ansible_output(stdout)
 
     #assert False, "%s" % results
-    assert 'msg' in results, "no message%s" % results
+    assert 'msg' in results, "no message: %s" % results
     assert results['msg'] != 'cannot yet run check mode against old-style modules' \
-                            "wrong error: %s" % results['msg']
+                            "wrong error: %s" % results['msg'] 
 
 
 
