@@ -28,6 +28,7 @@
   gather_facts: False
   user: root
   tasks:
+    - shell: ps aux | egrep ^bob | awk '{print $2}' | xargs kill
     - lineinfile: "line='bob ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=absent"
     - user: name=bob state=absent
     - file: path=/home/bob state=absent
