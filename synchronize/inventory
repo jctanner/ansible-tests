@@ -1,0 +1,6 @@
+localhost
+
+ahost ansible_ssh_host=127.0.0.2
+bhost ansible_ssh_host=127.0.0.3
+
+chost ansible_ssh_host=127.0.0.4 ansible_ssh_port=2222
