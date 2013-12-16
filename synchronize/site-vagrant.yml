@@ -1,0 +1,54 @@
+- name: prep environment
+  hosts: thishost
+  gather_facts: False
+  user: root
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    - name: start sshd on port 2222
+      shell: /usr/sbin/sshd -p 2222
+
+    - name: cleanup source files
+      shell: if [ -d "{{ srcdir }}"]; then rm -rf "{{ srcdir }}"; fi
+    - name: create source files
+      shell: mkdir "{{ srcdir }}"; touch "{{ srcdir }}"/file.a
+
+    - name: cleaup dest files
+      shell: rm -rf "{{ dstdir }}"*
+      
+#####################################
+
+- name: tests against port 2222 to simulate vagrant
+  hosts: localhost
+  gather_facts: False
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    - shell: whoami
+      register: who
+
+    - name: make sure the remote port is set to 2222 by inventory
+      synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
+      register: result
+    - debug: var=result
+    - name: verify port 2222 is used
+      fail:
+      when: "'-o Port=2222' not in result.cmd"
+
+    #" /tmp/foosrc jtanner@localhost:/tmp/foodst.localhost"
+    - name: verify the dest_host is actually specified
+      fail:
+      when: "' /tmp/foosrc ' + who.stdout + '@localhost:/tmp/foodst.' + inventory_hostname not in result.cmd"
+
+#####################################
+
+- name: cleanup environment
+  hosts: thishost
+  gather_facts: False
+  user: root
+  tasks:
+    - name: stop sshd on port 2222
+      shell: lsof -i :2222 | egrep ^sshd | awk '{print $2}' | head -n1 | xargs kill
+
