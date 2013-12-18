@@ -1,0 +1,54 @@
+- name: prep environment
+  hosts: localhost
+  gather_facts: False
+  user: root
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    - name: start sshd on port 2222
+      shell: /usr/sbin/sshd -p 2222
+     
+#####################################
+
+- name: basic tests
+  hosts: ahost
+  gather_facts: False
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    # figure out who i am
+    - shell: whoami
+      register: who
+
+# HOW DO WE VERIFY ANSIBLE SSH'ED TO THE REMOTE HOST TO CALL RSYNC? CAN IT?
+- hosts: bhost
+  gather_facts: False
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    - shell: whoami
+      register: who
+
+- name: tests against port 2222
+  hosts: chost
+  gather_facts: False
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    - shell: whoami
+      register: who
+
+#####################################
+
+- name: cleanup environment
+  hosts: localhost
+  gather_facts: False
+  user: root
+  tasks:
+    - name: stop sshd on port 2222
+      shell: lsof -i :2222 | egrep ^sshd | awk '{print $2}' | head -n1 | xargs kill
+
