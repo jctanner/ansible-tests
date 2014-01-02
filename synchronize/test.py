@@ -72,7 +72,23 @@ def test_synchronize():
     # https://github.com/ansible/ansible/pull/5091
     fh, fpath = tempfile.mkstemp()
     output = None
-    cmdargs = "ansible-playbook -i inventory site.yml"
+    cmdargs = "ansible-playbook -vvvv -i inventory site.yml"
+    cmdargs = shlex.split(cmdargs)
+    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+
+    assert stdout is not None, "no output from ansible-playbook: %s" % stderr
+    results = parse_playbook_output(stdout)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s \n %s" % (results, stdout)
+
+def test_synchronize_vagrant():
+
+    # https://github.com/ansible/ansible/pull/5091
+    fh, fpath = tempfile.mkstemp()
+    output = None
+    cmdargs = "ansible-playbook -vvvv -i inventory.vagrant site-vagrant.yml"
     cmdargs = shlex.split(cmdargs)
     p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate()

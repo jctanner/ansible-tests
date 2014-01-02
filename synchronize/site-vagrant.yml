@@ -6,8 +6,13 @@
     - srcdir: /tmp/foosrc
     - dstdir: /tmp/foodst
   tasks:
+    - name: check for ssh on port 2222
+      shell: lsof -i :2222 | egrep ^ssh | wc -l
+      register: sshcount
+
     - name: start sshd on port 2222
       shell: /usr/sbin/sshd -p 2222
+      when: "sshcount.stdout|int == 0"
 
     - name: cleanup source files
       shell: if [ -d "{{ srcdir }}"]; then rm -rf "{{ srcdir }}"; fi
@@ -38,6 +43,7 @@
       when: "'-o Port=2222' not in result.cmd"
 
     #" /tmp/foosrc jtanner@localhost:/tmp/foodst.localhost"
+    - debug: msg="{{ ' /tmp/foosrc ' + who.stdout + '@localhost:/tmp/foodst.' + inventory_hostname }}"
     - name: verify the dest_host is actually specified
       fail:
       when: "' /tmp/foosrc ' + who.stdout + '@localhost:/tmp/foodst.' + inventory_hostname not in result.cmd"
