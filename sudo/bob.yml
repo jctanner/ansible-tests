@@ -30,6 +30,8 @@
   tasks:
     - shell: ps aux | egrep ^bob | awk '{print $2}' | xargs -I {} kill {}
     - lineinfile: "line='bob ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=absent"
+    - shell: pkill -U bob
+      ignore_errors: True
     - user: name=bob state=absent
     - file: path=/home/bob state=absent
 

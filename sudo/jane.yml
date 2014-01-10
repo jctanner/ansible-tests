@@ -29,6 +29,8 @@
   user: root
   tasks:
     - lineinfile: "line='jane ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=absent"
+    - shell: pkill -U jane
+      ignore_errors: True
     - user: name=jane state=absent
     - file: path=/home/jane state=absent
 

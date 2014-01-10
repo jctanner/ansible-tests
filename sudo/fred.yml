@@ -28,6 +28,8 @@
   user: root
   tasks:
     - lineinfile: "line='fred ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers state=absent"
+    - shell: pkill -U fred
+      ignore_errors: True
     - user: name=fred state=absent
     - file: path=/home/fred state=absent
 
