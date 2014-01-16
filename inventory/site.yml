@@ -1,0 +1,48 @@
+- name: test1 -- a,b
+  hosts: testgroup1
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test2 -- a,c
+  hosts: testgroup2
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test3 -- a,b,c
+  hosts: testgroup1:testgroup2
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test4 -- a
+  hosts: testgroup1:&testgroup2
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test5 -- b
+  hosts: testgroup1:!testgroup2
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test6 -- b
+  hosts: testgroup1:!testgroup2:&testgroup1
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
+
+- name: test7 -- no hosts
+  hosts: testgroup1:!testgroup2:&testgroup2
+  gather_facts: False
+  connection: local
+  tasks:
+    - debug: var=inventory_hostname
