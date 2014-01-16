@@ -1,0 +1,8 @@
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - shell: rm -rf /tmp/nobody
+      ignore_errors: True
+    - shell: mkdir -p /tmp/nobody/.ssh
+      ignore_errors: True
+    - shell: chmod -R 777 /tmp/nobody/.ssh

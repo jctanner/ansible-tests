@@ -28,6 +28,25 @@ def parse_playbook_output(rawdata):
 
     return results
 
+def test_fixup_nobody():
+    # prepare_nobody.yml
+    fh, fpath = tempfile.mkstemp()
+    cmdargs = "ansible-playbook -vvvv -i inventory prepare_nobody.yml"
+    cmdargs = shlex.split(cmdargs)
+    output = None
+    try:
+        output = subprocess.check_output(cmdargs, stderr=fh)
+    except:
+        pass
+
+    assert output is not None, "no output from ansible-playbook: %s" % fh.read()
+    results = parse_playbook_output(output)
+
+    assert results != {}, "parsing results failed" 
+    assert results['failed'] == 0, "results: %s" % results
+    os.remove(fpath)
+   
+
 
 # MAKE SURE hacking/env-setup IS SOURCED BEFORE RUNNING TESTS
 def test_ansible_playbook_in_path():
