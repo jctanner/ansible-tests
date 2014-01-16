@@ -10,6 +10,7 @@ from ansible.runner.connection_plugins.ssh import Connection
 class FakeRunner(object):
 
     sudo = False
+    su = False
 
 
 
