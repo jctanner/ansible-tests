@@ -1,0 +1,51 @@
+- name: xhost
+  hosts: xhost
+  gather_facts: False
+  connection: ssh
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    # figure out who i am
+    - shell: whoami
+      register: who
+
+    - debug: var=inventory_hostname
+
+    - name: local connection push
+      local_action: synchronize src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
+      register: result
+    - debug: var=result
+
+    # xhost 
+    #   /tmp/foosrc jtanner@127.0.0.2:/tmp/foodst.xhost
+
+    - fail: "xhost failed was not a remote IP"
+      when: "' /tmp/foosrc ' + who.stdout + '@127.0.0.2:/tmp/foodst.' + inventory_hostname not in result.cmd"
+
+- name: yhost
+  hosts: yhost
+  gather_facts: False
+  connection: ssh
+  vars:
+    - srcdir: /tmp/foosrc
+    - dstdir: /tmp/foodst
+  tasks:
+    # figure out who i am
+    - shell: whoami
+      register: who
+
+    - debug: var=inventory_hostname
+
+    - name: local connection push
+      synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
+      register: result
+    - debug: var=result
+
+    # yhost
+    #   /tmp/foosrc /tmp/foodst.yhost
+
+    - fail: msg="yhost failed"
+      when: "' /tmp/foosrc /tmp/foodst.' + inventory_hostname not in result.cmd"
+
+

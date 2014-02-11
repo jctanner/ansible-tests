@@ -1,0 +1,10 @@
+- hosts: el6.lab.net
+  gather_facts: False
+  vars:
+    src: /tmp/foobaz
+    dest: /tmp/foobar
+  tasks:
+    - local_action: shell rm -rf "{{ src }}" ; mkdir "{{ src }}" ; touch "{{ src }}"/{1,2,3}
+    - shell: rm -rf "{{ dest }}"        
+
+    - synchronize: src="{{ src }}" dest="{{ dest }}"

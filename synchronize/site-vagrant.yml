@@ -1,5 +1,5 @@
 - name: prep environment
-  hosts: thishost
+  hosts: localhost
   gather_facts: False
   user: root
   vars:
@@ -15,7 +15,8 @@
       when: "sshcount.stdout|int == 0"
 
     - name: cleanup source files
-      shell: if [ -d "{{ srcdir }}"]; then rm -rf "{{ srcdir }}"; fi
+      shell: rm -rf "{{ srcdir }}"
+      #shell: if [ -d "{{ srcdir }}"]; then rm -rf "{{ srcdir }}"; fi
     - name: create source files
       shell: mkdir "{{ srcdir }}"; touch "{{ srcdir }}"/file.a
 
@@ -25,7 +26,7 @@
 #####################################
 
 - name: tests against port 2222 to simulate vagrant
-  hosts: localhost
+  hosts: thishost
   gather_facts: False
   vars:
     - srcdir: /tmp/foosrc
@@ -44,14 +45,15 @@
 
     #" /tmp/foosrc jtanner@localhost:/tmp/foodst.localhost"
     - debug: msg="{{ ' /tmp/foosrc ' + who.stdout + '@localhost:/tmp/foodst.' + inventory_hostname }}"
+    - debug: var=result
     - name: verify the dest_host is actually specified
       fail:
-      when: "' /tmp/foosrc ' + who.stdout + '@localhost:/tmp/foodst.' + inventory_hostname not in result.cmd"
+      when: "' /tmp/foosrc ' + who.stdout + '@127.0.0.1:/tmp/foodst.' + inventory_hostname not in result.cmd"
 
 #####################################
 
 - name: cleanup environment
-  hosts: thishost
+  hosts: localhost
   gather_facts: False
   user: root
   tasks:

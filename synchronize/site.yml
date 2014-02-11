@@ -29,6 +29,7 @@
 - name: basic tests
   hosts: ahost
   gather_facts: False
+  connection: ssh
   vars:
     - srcdir: /tmp/foosrc
     - dstdir: /tmp/foodst
@@ -61,7 +62,7 @@
       local_action: synchronize src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
       register: result
     - debug: var=result
-    - fail:
+    - fail: "make sure source is /path and dest is user@host/path ... {{ result.cmd }}"
       when: "' /tmp/foosrc ' + who.stdout + '@127.0.0.2:/tmp/foodst.' + inventory_hostname not in result.cmd"
 
     # jtanner@127.0.0.2:/tmp/foosrc /tmp/foodst.ahost
@@ -69,11 +70,10 @@
       local_action: synchronize src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}" mode=pull
       register: result
     - debug: var=result
-    - fail:
+    - fail: msg="make sure source is user@host/path and dest is /path"
       when: "who.stdout + '@127.0.0.2:/tmp/foosrc /tmp/foodst.' + inventory_hostname not in result.cmd"
 
 
-# HOW DO WE VERIFY ANSIBLE SSH'ED TO THE REMOTE HOST TO CALL RSYNC? CAN IT?
 - hosts: bhost
   gather_facts: False
   vars:
@@ -87,7 +87,7 @@
       synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}" dest_port=2222
       register: result
     - debug: var=result
-    - fail:
+    - fail: msg="Port=2222 not in command"
       when: "'-o Port=2222' not in result.cmd"
 
 
@@ -105,7 +105,7 @@
       synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
       register: result
     - debug: var=result
-    - fail:
+    - fail: msg="Port=2222 not in command"
       when: "'-o Port=2222' not in result.cmd"
 
 

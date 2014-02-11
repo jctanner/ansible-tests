@@ -12,6 +12,8 @@
     # https://github.com/ansible/ansible/issues/4596
     ################################################
 
+    - copy: src=keyfile_with_comments.j2 dest={{ keyfile }} force=yes
+
     - authorized_key:
         user={{ ansible_ssh_user }}
         path={{ keyfile }}

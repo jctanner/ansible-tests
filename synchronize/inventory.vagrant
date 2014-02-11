@@ -1,2 +1,5 @@
-thishost ansible_ssh_host=127.0.0.1 ansible_ssh_port=22
-localhost ansible_ssh_port=2222
+#thishost ansible_ssh_host=127.0.0.1 ansible_ssh_port=22
+#localhost ansible_ssh_port=2222
+thishost ansible_ssh_host=127.0.0.1 ansible_ssh_port=2222 ansible_ssh_user=vagrant
+#localhost ansible_ssh_port=2222
+localhost ansible_ssh_user=root

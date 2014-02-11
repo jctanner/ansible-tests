@@ -1,6 +1,14 @@
 localhost
+el6.lab.net ansible_ssh_user=root
 
 ahost ansible_ssh_host=127.0.0.2
 bhost ansible_ssh_host=127.0.0.3
-
 chost ansible_ssh_host=127.0.0.4 ansible_ssh_port=2222
+
+xhost ansible_ssh_host=127.0.0.2
+yhost ansible_connection=local
+
+#[cmodes]
+#xhost
+#yhost
+
