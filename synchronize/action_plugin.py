@@ -162,3 +162,54 @@ inject_user: root
 runner_user: jtanner
 this_user: vagrant
 """
+
+############################################
+#   Host with local connection
+############################################
+
+runner = FakeRunner()
+runner.remote_user = "jtanner"
+runner.transport = "paramiko"
+conn = FakeConn()
+conn.host = "127.0.0.1"
+conn.delegate = "thishost"
+inject = {
+            'inventory_hostname': "thishost",
+            'ansible_ssh_host': '127.0.0.1',
+            'ansible_connection': 'local',
+            'delegate_to': None,
+            'playbook_dir': '.',
+         }
+
+x = Synchronize(runner)
+x.setup("synchronize", inject)
+x.run(conn, "/tmp", "synchronize", "src=/tmp/foo dest=/tmp/bar", inject)
+
+print "#========== Host Local =========#"
+print "module_name:",runner.executed_module_name
+print "args:",runner.executed_args
+print "inject:",runner.executed_inject
+
+#import epdb; epdb.st()
+assert runner.transport == "paramiko", "runner transport was changed"
+assert runner.remote_user == "jtanner", "runner remote_user was changed"
+assert runner.executed_inject['delegate_to'] == "127.0.0.1", "was not delegated to 127.0.0.1"
+assert "dest_port" not in runner.executed_args, "dest_port should not have been set"
+assert "src=/tmp/foo" in runner.executed_args, "source was set incorrectly"
+assert "dest=/tmp/bar" in runner.executed_args, "dest was set incorrectly"
+
+"""
+######### START
+inject['ansible_connection']: local
+runner.transport: paramiko
+######### RUN
+before loop
+test is 127.0.0.1: False
+original_transport: local
+conn.delegate: test
+delegate vars: {'inventory_hostname': 'test', 'group_names': ['test'], 'ansible_connection': 'local', 'inventory_hostname_short': 'test'}
+process_args: False
+use_delegate: False
+skipped loop
+module_items: dest=/tmp/bar src=/tmp/foo
+"""

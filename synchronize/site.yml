@@ -57,21 +57,23 @@
     - shell: if [ ! -d "{{ dstdir + '.' + inventory_hostname }}" ]; then exit 1; fi
 
 
-    # /tmp/foosrc jtanner@127.0.0.2:/tmp/foodst.ahost
+    # /tmp/foosrc /tmp/foodst.ahost
     - name: local connection push
       local_action: synchronize src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
+      #synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}"
       register: result
     - debug: var=result
-    - fail: "make sure source is /path and dest is user@host/path ... {{ result.cmd }}"
-      when: "' /tmp/foosrc ' + who.stdout + '@127.0.0.2:/tmp/foodst.' + inventory_hostname not in result.cmd"
+    - fail: "make sure source is /path and dest is /path ... {{ result.cmd }}"
+      when: "' /tmp/foosrc /tmp/foodst.' + inventory_hostname not in result.cmd"
 
-    # jtanner@127.0.0.2:/tmp/foosrc /tmp/foodst.ahost
+    # /tmp/foosrc /tmp/foodst.ahost
     - name: local connection pull
       local_action: synchronize src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}" mode=pull
+      #synchronize: src="{{ srcdir }}" dest="{{ dstdir + '.' + inventory_hostname }}" mode=pull
       register: result
     - debug: var=result
-    - fail: msg="make sure source is user@host/path and dest is /path"
-      when: "who.stdout + '@127.0.0.2:/tmp/foosrc /tmp/foodst.' + inventory_hostname not in result.cmd"
+    - fail: msg="make sure source is /path and dest is /path"
+      when: "'/tmp/foosrc /tmp/foodst.' + inventory_hostname not in result.cmd"
 
 
 - hosts: bhost

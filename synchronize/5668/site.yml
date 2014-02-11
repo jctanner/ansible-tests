@@ -1,0 +1,4 @@
+- hosts: test
+  gather_facts: False
+  tasks:
+    - synchronize: src=/tmp/foo dest=/tmp/bar

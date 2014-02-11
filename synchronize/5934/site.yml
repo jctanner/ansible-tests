@@ -1,0 +1,8 @@
+- name: test
+  hosts: test
+  gather_facts: False
+  tasks:
+    - local_action: shell if [ ! -d /tmp/foo ]; then mkdir /tmp/foo ; fi
+    - shell: if [ ! -d /tmp/bar ]; then rm -rf /tmp/bar ; fi
+    - name: test sync
+      synchronize: src=/tmp/foo dest=/tmp/bar
