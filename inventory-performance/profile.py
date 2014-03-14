@@ -17,6 +17,12 @@ def profile_playbook(playbook_file, environment=None):
     elapsed_time, rc, stdout, stderr = _run(this_cmd, environment=environment)
     return (elapsed_time, rc, stdout, stderr)
 
+def cache_inventory(script_path, environment=None):
+    this_cmd = "python %s" % script_path
+    elapsed_time, rc, stdout, stderr = _run(this_cmd, environment=environment)
+    return (elapsed_time, rc, stdout, stderr)
+
+
 def _run(this_cmd, environment=None):
     kwargs = dict(
         shell=True,
@@ -80,7 +86,10 @@ def main():
                                ANSIBLE_LIBRARY="/home/jtanner/ansible/library:/usr/share/ansible/",
                                PATH="/home/jtanner/ansible/bin:/home/jtanner/bin:/home/jtanner/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
 
-            #import epdb; epdb.st()
+            # cache the inventory build
+            __, __, __, __ = cache_inventory("inventory/fake.py", environment=environment)
+
+            # run the playbook and measure
             elapsed_time, rc, stdout, stderr = profile_playbook("site-one.yml", environment=environment)      
 
             stats = None
