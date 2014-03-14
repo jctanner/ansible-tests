@@ -42,7 +42,7 @@ def _run(this_cmd, environment=None):
 
 def get_test_params(limit=100):
     plist = []
-    plist = sorted( [x for x in itertools.permutations(range(1, limit, 5), 2) ] )
+    plist = sorted( [x for x in itertools.permutations(range(1, limit, 50), 2) ] )
     return plist
 
 def parse_cprofile_stdout(data):
@@ -73,9 +73,9 @@ def parse_cprofile_stdout(data):
     
 def main():
 
-    limit = 100
+    limit = 1000
 
-    for x in range(1, limit, 5):
+    for x in range(1, limit, 50):
         hosts = x
         for groups, vars_ in get_test_params(limit=limit):
 

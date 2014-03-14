@@ -2,4 +2,5 @@
   connection: local
   gather_facts: False
   tasks:
-    - shell: echo "{{ foo }}"
+    #- shell: echo "{{ foo }}"
+    - debug: var=foo

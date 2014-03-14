@@ -30,11 +30,12 @@ def build(gc, hc, vc):
     inventory['all'] = {}
     inventory['all']['hosts'] = []
     inventory['all']['vars'] = {}
-    inventory['all']['vars']['ansible_ssh_user'] = "root"
-    inventory['all']['vars']['ansible_ssh_host'] = "192.168.1.148"
+    #inventory['all']['vars']['ansible_ssh_user'] = "root"
+    #inventory['all']['vars']['ansible_ssh_host'] = "192.168.1.148"
 
     inventory['_meta'] = {}
     inventory['_meta']['hostvars'] = {}
+
 
 
     # make a bunch of groups
@@ -44,19 +45,26 @@ def build(gc, hc, vc):
         inventory[this_group]['hosts'] = []
         inventory[this_group]['vars'] = {}
 
-        # make a bunch of hosts
-        for z in range(0, hc):
-            this_host = "h" + str(x) + str(z)
-            inventory[this_group]['hosts'].append(this_host)       
-            inventory['all']['hosts'].append(this_host)       
-            inventory['_meta']['hostvars'][this_host] = {}
+    # make a bunch of hosts
+    for z in range(0, hc):
+        this_host = "h" + str(x) + str(z)
+        #inventory[this_group]['hosts'].append(this_host)       
+        inventory['all']['hosts'].append(this_host)       
+        inventory['_meta']['hostvars'][this_host] = {}
 
-            # make a bunch of vars
-            for y in range(0, vc):
-                this_var = "v" + str(y)
-                inventory['all']['vars'][this_var] = this_var + "-value"
-                inventory['_meta']['hostvars'][this_host][this_var] = this_var + "-value"
-                inventory[this_group]['vars'][this_host + this_var] = this_host + this_var + "-value"
+        # add host to two random groups
+        if ( "g" + str(z) ) in inventory:
+            inventory["g" + str(z)]['hosts'].append(this_host)
+        if ( "g" + str(z + 1) ) in inventory:
+            inventory["g" + str(z + 1)]['hosts'].append(this_host)
+
+    # make a bunch of vars for each host
+    for y in range(0, vc):
+        if len(inventory['all']['vars'].keys()) < (vc + 1):
+            this_var = "v" + str(y)
+            inventory['all']['vars'][this_var] = this_var + "-value"
+            #inventory['_meta']['hostvars'][this_host][this_var] = this_var + "-value"
+            #inventory[this_group]['vars'][this_host + this_var] = this_host + this_var + "-value"
 
     return inventory
 
@@ -75,6 +83,7 @@ def profile(inventory):
     for g in groupnames:
         vars_ += len(inventory[g]['vars'].keys())
 
+    f = open("/tmp/awx.log", "a").write("###########\n")        
     f = open("/tmp/awx.log", "a").write("groups: %s\n" % groups)        
     f = open("/tmp/awx.log", "a").write("hosts: %s\n" % hosts)        
     f = open("/tmp/awx.log", "a").write("vars: %s\n" % vars_)        
