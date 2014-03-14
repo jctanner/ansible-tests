@@ -1,0 +1,13 @@
+- hosts: all
+  connection: local
+  gather_facts: False
+  tasks:
+    - shell: echo "{{ foo }}"
+    - shell: echo "{{ foo }}"
+
+- hosts: all
+  connection: local
+  gather_facts: False
+  tasks:
+    - shell: echo "{{ foo }}"
+    - shell: echo "{{ foo }}"
